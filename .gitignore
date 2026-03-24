@@ -6,7 +6,9 @@ dist/
 *.log
 
 # uploaded or generated data
-storage/
-uploads/
+storage/*
+!storage/.gitkeep
+uploads/*
+!uploads/.gitkeep
 transcripts/
 results/

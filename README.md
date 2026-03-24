@@ -88,9 +88,12 @@ The app runs on port 3000 by default. Set `PORT` environment variable to change.
 - Simple Express server (`server.js`)
 - Upload form UI (served from `/prototype/index.html`)
 - Result page example (served from `/prototype/result.html`)
-- Mock upload endpoint at `POST /api/upload` (placeholder)
+- Local file upload endpoint at `POST /api/upload` (saves uploads to `uploads/`)
 - Mock result endpoint at `GET /api/result/:id` (returns example JSON)
 - Transcript-to-LLM pipeline endpoint at `POST /api/generate-from-transcript`
+- Prototype upload page now supports:
+  - transcript demo mode
+  - real voice memo upload mode (local save only)
 - Two-step generation flow:
   - understanding layer (`prompts/understanding.md`)
   - writing layer (`prompts/writing.md`)
@@ -111,7 +114,7 @@ To enable real model calls:
    ```
 3. Restart the server
 
-Example request:
+Example transcript request:
 
 ```bash
 curl -X POST http://localhost:3000/api/generate-from-transcript \
@@ -123,6 +126,21 @@ curl -X POST http://localhost:3000/api/generate-from-transcript \
     "transcript": "我小时候啊，家里其实挺穷的，房子也不大，但是人多，所以总是热热闹闹的。"
   }'
 ```
+
+Example upload request:
+
+```bash
+curl -X POST http://localhost:3000/api/upload \
+  -F person_name="奶奶" \
+  -F theme="自由讲述" \
+  -F notes="第一版先本地保存" \
+  -F file=@/path/to/voice-memo.m4a
+```
+
+Current upload behavior:
+- saves the file locally under `uploads/`
+- returns file metadata
+- does not transcribe yet
 
 ## Next steps
 

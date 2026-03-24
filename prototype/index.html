@@ -85,6 +85,12 @@
       font-size: 14px;
       line-height: 1.6;
     }
+    .switcher {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 0 0 18px;
+    }
     .btn {
       appearance: none;
       border: 0;
@@ -119,6 +125,11 @@
     </div>
 
     <div class="card">
+      <div class="switcher">
+        <button id="modeTranscript" class="btn btn-secondary" type="button">先跑 transcript 演示</button>
+        <button id="modeUpload" class="btn btn-secondary" type="button">试真实语音上传</button>
+      </div>
+
       <label for="name">受访者名字</label>
       <input id="name" placeholder="例如：奶奶 / 外公 / 妈妈" />
 
@@ -134,14 +145,19 @@
       <label for="notes">备注（可选）</label>
       <textarea id="notes" placeholder="例如：这是奶奶刚刚讲老家和她母亲的一段"></textarea>
 
-      <label for="transcript">先贴一段 transcript 做演示</label>
-      <textarea id="transcript" placeholder="把一段口述文字贴在这里，先走通前端 + LLM 结果流程。">我小时候啊，家里其实挺穷的，房子也不大，但是人多，所以总是热热闹闹的。我妈特别能干，天还没亮就起来做饭，晚上还要做针线。我现在一想到小时候，先想到的倒不是苦，是那个家里总有饭香。</textarea>
+      <div id="transcriptSection">
+        <label for="transcript">先贴一段 transcript 做演示</label>
+        <textarea id="transcript" placeholder="把一段口述文字贴在这里，先走通前端 + LLM 结果流程。">我小时候啊，家里其实挺穷的，房子也不大，但是人多，所以总是热热闹闹的。我妈特别能干，天还没亮就起来做饭，晚上还要做针线。我现在一想到小时候，先想到的倒不是苦，是那个家里总有饭香。</textarea>
+      </div>
 
-      <label>上传录音</label>
-      <div class="drop">
-        支持 iPhone 语音备忘录（.m4a）直接上传<br />
-        也支持 .mp3 / .wav<br /><br />
-        <strong>当前页面先演示 transcript → 结果。</strong>
+      <div id="uploadSection">
+        <label>上传录音</label>
+        <div class="drop">
+          支持 iPhone 语音备忘录（.m4a）直接上传<br />
+          也支持 .mp3 / .wav
+        </div>
+        <div class="hint">第一版会先把文件保存到本地，转写还没接上。</div>
+        <input id="audioFile" type="file" accept=".m4a,.mp3,.wav,.webm,.mp4,audio/*,video/quicktime" />
       </div>
       <div class="hint">第一版建议单段录音控制在 5–30 分钟，先把一段讲清楚就很好。</div>
 
@@ -161,34 +177,79 @@
   <script>
     const btn = document.getElementById('generateBtn');
     const statusEl = document.getElementById('status');
+    const transcriptSection = document.getElementById('transcriptSection');
+    const uploadSection = document.getElementById('uploadSection');
+    const modeTranscriptBtn = document.getElementById('modeTranscript');
+    const modeUploadBtn = document.getElementById('modeUpload');
+    let currentMode = 'transcript';
+
+    function renderMode() {
+      transcriptSection.style.display = currentMode === 'transcript' ? 'block' : 'none';
+      uploadSection.style.display = currentMode === 'upload' ? 'block' : 'none';
+      modeTranscriptBtn.style.background = currentMode === 'transcript' ? 'var(--accent)' : 'var(--accent-soft)';
+      modeTranscriptBtn.style.color = currentMode === 'transcript' ? '#fff' : 'var(--text)';
+      modeUploadBtn.style.background = currentMode === 'upload' ? 'var(--accent)' : 'var(--accent-soft)';
+      modeUploadBtn.style.color = currentMode === 'upload' ? '#fff' : 'var(--text)';
+      btn.textContent = currentMode === 'transcript' ? '开始整理这段回忆' : '上传这段语音 memo';
+    }
+
+    modeTranscriptBtn.addEventListener('click', () => {
+      currentMode = 'transcript';
+      renderMode();
+      statusEl.textContent = '';
+    });
+
+    modeUploadBtn.addEventListener('click', () => {
+      currentMode = 'upload';
+      renderMode();
+      statusEl.textContent = '';
+    });
 
     btn.addEventListener('click', async () => {
-      const payload = {
+      const common = {
         person_name: document.getElementById('name').value.trim(),
         theme: document.getElementById('theme').value,
-        notes: document.getElementById('notes').value.trim(),
-        transcript: document.getElementById('transcript').value.trim()
+        notes: document.getElementById('notes').value.trim()
       };
 
-      if (!payload.transcript) {
-        statusEl.textContent = '请先贴一段 transcript。';
-        return;
-      }
-
       btn.disabled = true;
-      statusEl.textContent = '正在整理这段口述…';
 
       try {
-        const data = await window.FamilyMemoirApp.generateFromTranscript(payload);
-        window.FamilyMemoirApp.saveLatestResult(data);
-        statusEl.textContent = '整理完成，正在跳转结果页…';
-        window.location.href = '/result';
+        if (currentMode === 'transcript') {
+          const payload = {
+            ...common,
+            transcript: document.getElementById('transcript').value.trim()
+          };
+
+          if (!payload.transcript) {
+            statusEl.textContent = '请先贴一段 transcript。';
+            return;
+          }
+
+          statusEl.textContent = '正在整理这段口述…';
+          const data = await window.FamilyMemoirApp.generateFromTranscript(payload);
+          window.FamilyMemoirApp.saveLatestResult(data);
+          statusEl.textContent = '整理完成，正在跳转结果页…';
+          window.location.href = '/result';
+        } else {
+          const file = document.getElementById('audioFile').files[0];
+          if (!file) {
+            statusEl.textContent = '请先选择一个语音文件。';
+            return;
+          }
+
+          statusEl.textContent = '正在上传语音 memo…';
+          const data = await window.FamilyMemoirApp.uploadAudio({ ...common, file });
+          statusEl.textContent = `上传完成：${data.upload.original_name}（${Math.round(data.upload.size_bytes / 1024)} KB）\n已保存到：${data.upload.stored_at}`;
+        }
       } catch (error) {
         statusEl.textContent = `处理失败：${error.message}`;
       } finally {
         btn.disabled = false;
       }
     });
+
+    renderMode();
   </script>
 </body>
 </html>
