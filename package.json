@@ -1,0 +1,17 @@
+{
+  "name": "family-memoir",
+  "version": "0.1.0",
+  "description": "Family memoir app for voice memos to memory fragments",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["memoir", "voice", "transcription"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "openai": "^4.104.0"
+  }
+}

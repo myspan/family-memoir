@@ -1,0 +1,12 @@
+# local build / tmp
+.DS_Store
+node_modules/
+dist/
+.tmp/
+*.log
+
+# uploaded or generated data
+storage/
+uploads/
+transcripts/
+results/

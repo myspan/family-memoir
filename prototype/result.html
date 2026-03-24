@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Family Memoir — Result</title>
+  <style>
+    :root {
+      --bg: #f7f2ea;
+      --card: #fffdf8;
+      --text: #2c241d;
+      --muted: #71665c;
+      --line: #e5d8c9;
+      --accent: #7d5a3a;
+      --chip: #f1e6d8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    .wrap {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 40px 20px 90px;
+    }
+    .eyebrow {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+    h1 {
+      font-size: 34px;
+      line-height: 1.2;
+      margin: 0 0 14px;
+    }
+    .lead {
+      color: var(--muted);
+      line-height: 1.8;
+      margin-bottom: 28px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 18px;
+      box-shadow: 0 8px 22px rgba(80,55,30,0.05);
+    }
+    h2 {
+      font-size: 18px;
+      margin: 0 0 14px;
+    }
+    p {
+      line-height: 1.9;
+      margin: 0 0 14px;
+    }
+    blockquote {
+      margin: 0 0 12px;
+      padding: 12px 16px;
+      border-left: 4px solid #d5b899;
+      background: #fff8f0;
+      border-radius: 10px;
+      color: #473a30;
+    }
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .chip {
+      background: var(--chip);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 13px;
+      color: #4f4032;
+    }
+    ul {
+      margin: 0;
+      padding-left: 20px;
+      line-height: 1.9;
+    }
+    .grid {
+      display: grid;
+      gap: 18px;
+      grid-template-columns: 1fr 1fr;
+    }
+    @media (max-width: 720px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+    a { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="eyebrow">结果页 · <span id="mode-pill">回忆片段稿</span></div>
+    <h1 id="title">她记忆里的童年，先是饭香，再是母亲忙碌的身影</h1>
+    <div id="lead" class="lead">
+      这一版先不追求把一生讲全，而是尽量把这段口述里最值得留下的东西整理出来。
+    </div>
+
+    <div class="card">
+      <h2>回忆片段稿</h2>
+      <div id="draft">
+        <p>她回忆起小时候的家，最先浮现出来的并不是贫穷本身，而是一种始终热热闹闹的生活气息。房子不大，家里人却多，于是日子总像挤在一起往前走。母亲是这个家里最忙的人，天还没亮就起身做饭，到了晚上还要继续做针线。在她的记忆里，母亲似乎总没有真正停下来过。</p>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h2>原话摘录</h2>
+        <div id="quotes">
+          <blockquote>我妈特别能干，天还没亮就起来做饭。</blockquote>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>讲述重心</h2>
+        <ul id="focus-list">
+          <li>主要在讲：童年家庭氛围与母亲的勤劳</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>记忆线索</h2>
+      <div id="chips" class="chips">
+        <div class="chip">人物：母亲</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>下次可以顺着讲的地方</h2>
+      <ul id="followups">
+        <li>你刚才提到母亲特别能干，我还想听一件最能代表她的事。</li>
+      </ul>
+    </div>
+
+    <div class="eyebrow"><a href="/">返回上传页示例</a></div>
+  </div>
+  <script src="/prototype/app.js"></script>
+  <script src="/prototype/result.js"></script>
+</body>
+</html>

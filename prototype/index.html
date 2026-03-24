@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Family Memoir — Upload</title>
+  <style>
+    :root {
+      --bg: #f6f1e8;
+      --card: #fffaf3;
+      --text: #2d241d;
+      --muted: #74685d;
+      --line: #e4d7c7;
+      --accent: #7d5a3a;
+      --accent-soft: #efe2d2;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    .wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 48px 20px 80px;
+    }
+    h1 {
+      font-size: 36px;
+      line-height: 1.15;
+      margin: 0 0 14px;
+    }
+    .sub {
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.7;
+      margin-bottom: 32px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 8px 24px rgba(80, 55, 30, 0.05);
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      margin: 16px 0 8px;
+    }
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-size: 15px;
+      background: #fff;
+      color: var(--text);
+    }
+    textarea { min-height: 100px; resize: vertical; }
+    .hint {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .drop {
+      margin-top: 8px;
+      padding: 24px;
+      border: 1.5px dashed #ccb8a1;
+      border-radius: 14px;
+      background: #fff;
+      color: var(--muted);
+      text-align: center;
+    }
+    .actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+      flex-wrap: wrap;
+    }
+    .status {
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .btn {
+      appearance: none;
+      border: 0;
+      border-radius: 999px;
+      padding: 14px 22px;
+      font-size: 15px;
+      cursor: pointer;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+    }
+    .btn-secondary {
+      background: var(--accent-soft);
+      color: var(--text);
+    }
+    .mini {
+      margin-top: 26px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+    a { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>想从哪里讲都可以。</h1>
+    <div class="sub">
+      上传一段家人的语音备忘录，我们会先认真听，再把它整理成一篇可保存的回忆文字。<br />
+      不用按顺序，也不用一次讲完整个人生。
+    </div>
+
+    <div class="card">
+      <label for="name">受访者名字</label>
+      <input id="name" placeholder="例如：奶奶 / 外公 / 妈妈" />
+
+      <label for="theme">这段大概在讲什么（可选）</label>
+      <select id="theme">
+        <option>自由讲述</option>
+        <option>童年与家庭</option>
+        <option>父母与兄弟姐妹</option>
+        <option>年轻时的转折</option>
+        <option>工作与吃苦经历</option>
+      </select>
+
+      <label for="notes">备注（可选）</label>
+      <textarea id="notes" placeholder="例如：这是奶奶刚刚讲老家和她母亲的一段"></textarea>
+
+      <label for="transcript">先贴一段 transcript 做演示</label>
+      <textarea id="transcript" placeholder="把一段口述文字贴在这里，先走通前端 + LLM 结果流程。">我小时候啊，家里其实挺穷的，房子也不大，但是人多，所以总是热热闹闹的。我妈特别能干，天还没亮就起来做饭，晚上还要做针线。我现在一想到小时候，先想到的倒不是苦，是那个家里总有饭香。</textarea>
+
+      <label>上传录音</label>
+      <div class="drop">
+        支持 iPhone 语音备忘录（.m4a）直接上传<br />
+        也支持 .mp3 / .wav<br /><br />
+        <strong>当前页面先演示 transcript → 结果。</strong>
+      </div>
+      <div class="hint">第一版建议单段录音控制在 5–30 分钟，先把一段讲清楚就很好。</div>
+
+      <div class="actions">
+        <button id="generateBtn" class="btn btn-primary">开始整理这段回忆</button>
+        <a class="btn btn-secondary" href="/result">查看结果页示例</a>
+      </div>
+      <div id="status" class="status"></div>
+    </div>
+
+    <div class="mini">
+      这不是问卷，也不是考试。<br />
+      如果一段录音里只讲了一个人、一个地方、或一件小事，也完全可以。
+    </div>
+  </div>
+  <script src="/prototype/app.js"></script>
+  <script>
+    const btn = document.getElementById('generateBtn');
+    const statusEl = document.getElementById('status');
+
+    btn.addEventListener('click', async () => {
+      const payload = {
+        person_name: document.getElementById('name').value.trim(),
+        theme: document.getElementById('theme').value,
+        notes: document.getElementById('notes').value.trim(),
+        transcript: document.getElementById('transcript').value.trim()
+      };
+
+      if (!payload.transcript) {
+        statusEl.textContent = '请先贴一段 transcript。';
+        return;
+      }
+
+      btn.disabled = true;
+      statusEl.textContent = '正在整理这段口述…';
+
+      try {
+        const data = await window.FamilyMemoirApp.generateFromTranscript(payload);
+        window.FamilyMemoirApp.saveLatestResult(data);
+        statusEl.textContent = '整理完成，正在跳转结果页…';
+        window.location.href = '/result';
+      } catch (error) {
+        statusEl.textContent = `处理失败：${error.message}`;
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

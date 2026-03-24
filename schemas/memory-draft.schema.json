@@ -1,0 +1,132 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/schemas/memory-draft.schema.json",
+  "title": "MemoryDraft",
+  "type": "object",
+  "required": [
+    "title",
+    "piece_type",
+    "summary_focus",
+    "narrative_draft",
+    "quotes",
+    "entities",
+    "needs_clarification",
+    "follow_up_questions"
+  ],
+  "properties": {
+    "title": { "type": "string" },
+    "piece_type": {
+      "type": "string",
+      "enum": ["memory_fragment", "chapter_draft"]
+    },
+    "summary_focus": {
+      "type": "object",
+      "required": ["main_focus"],
+      "properties": {
+        "main_focus": { "type": "string" },
+        "primary_people": { "type": "array", "items": { "type": "string" } },
+        "primary_places": { "type": "array", "items": { "type": "string" } },
+        "primary_emotions": { "type": "array", "items": { "type": "string" } },
+        "unexpanded_threads": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": false
+    },
+    "narrative_draft": { "type": "string" },
+    "quotes": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "entities": {
+      "type": "object",
+      "properties": {
+        "people": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "role": { "type": "string" },
+              "description": { "type": "string" }
+            },
+            "additionalProperties": false
+          }
+        },
+        "places": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "description": { "type": "string" }
+            },
+            "additionalProperties": false
+          }
+        },
+        "times": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "label": { "type": "string" },
+              "specificity": { "type": "string" }
+            },
+            "additionalProperties": false
+          }
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "description": { "type": "string" },
+              "status": { "type": "string" }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "emotional_signals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "emotion": { "type": "string" },
+          "evidence": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "needs_clarification": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "field": { "type": "string" },
+          "reason": { "type": "string" }
+        },
+        "required": ["field", "reason"],
+        "additionalProperties": false
+      }
+    },
+    "follow_up_questions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 0,
+      "maxItems": 5
+    },
+    "source_quality": {
+      "type": "object",
+      "properties": {
+        "clarity": { "type": "string" },
+        "coherence": { "type": "string" },
+        "audio_issues": { "type": "array", "items": { "type": "string" } },
+        "confidence_note": { "type": "string" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
